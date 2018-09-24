@@ -26,10 +26,22 @@ function soundExplosion (){
 function genBoard(gridSize) {
   for (var x = 0; x < gridSize; x++){
     for (var y = 0; y < gridSize; y++){
-      board.cells.push ({row: x, col: y, isMine: true, hidden: true,})
+      board.cells.push ({row: x, col: y, isMine: false, isMarked: false, hidden: true,})
     }
   }
+selectMines(gridSize, board);
+return board;
 }
+
+function selectMines(manyMines, board) {
+  var remainingCells = board.cells.slice();
+  for(var x=0; x<manyMines; x++) {
+    var selection = Math.floor(Math.random()*remainingCells.length);
+    var selectedCell = remainingCells[selection];
+    selectedCell.isMine = true;
+    remainingCells.splice(selection,1);
+  }
+} 
 
 // var board = {
 //   cells: [ 
@@ -43,15 +55,12 @@ function genBoard(gridSize) {
 
 // Start the game
 function startGame () {
+  for (var x = 0; x < board.cells.length; x++) {
+    board.cells[x]["surroundingMines"] = countSurroundingMines(board.cells[x])
+  }
   genBoard(gridSize);
   document.addEventListener("click", soundClick, checkForWin)
   document.addEventListener("dblclick", soundClick, checkForWin)
-   document.addEventListener('contextmenu', checkForWin)
-
-  for (var x = 0; x < board.cells.length; x++){
-    board.cells[x]["surroundingMines"] = countSurroundingMines(board.cells[x])
-  }
-
   // Don't remove this function call: it makes the game work!
   lib.initBoard()
 }
@@ -63,11 +72,11 @@ function startGame () {
 function checkForWin () {
   for (var x = 0; x < board.cells.length; x++) 
   {
-    if (board.cells[x].isMine === "false" && board.cells[x].hidden === "false"){
+    if (board.cells[x].isMine === "false" && !board.cells[x].isMarked === "false"){
       return
     }
-    if (board.cells[x].isMine === "false" && board.cells[x].hidden === "false"){
-    return
+    if (board.cells[x].isMine === "false" && !board.cells[x].hidden === "false"){
+      return
   }
   lib.displayMessage('You win!');
   soundWin();
