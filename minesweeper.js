@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', startGame)
 // Define your `board` object here!
 
 // Variables for generating the board
-var gridSize = 3;
+var gridSize = 4;
 var board = {cells: []}
 
 // Audio
@@ -26,7 +26,7 @@ function soundExplosion (){
 function genBoard(gridSize) {
   for (var x = 0; x < gridSize; x++){
     for (var y = 0; y < gridSize; y++){
-      board.cells.push ({row: x, col: y, isMine: false, isMarked: false, hidden: true,})
+      board.cells.push ({row: x, col: y, isMine: true, isMarked: false, hidden: true,})
     }
   }
 selectMines(gridSize, board);
@@ -56,7 +56,7 @@ function selectMines(manyMines, board) {
 // Start the game
 function startGame () {
   for (var x = 0; x < board.cells.length; x++) {
-    board.cells[x]["surroundingMines"] = countSurroundingMines(board.cells[x])
+    board.cells[x].surroundingMines = countSurroundingMines(board.cells[x])
   }
   genBoard(gridSize);
   document.addEventListener("click", soundClick, checkForWin)
@@ -72,10 +72,10 @@ function startGame () {
 function checkForWin () {
   for (var x = 0; x < board.cells.length; x++) 
   {
-    if (board.cells[x].isMine === "false" && !board.cells[x].isMarked === "false"){
+    if (board.cells[x].isMine === false && !board.cells[x].isMarked === true){
       return
     }
-    if (board.cells[x].isMine === "false" && !board.cells[x].hidden === "false"){
+    if (board.cells[x].isMine === true && !board.cells[x].hidden === false){
       return
   }
   lib.displayMessage('You win!');
@@ -102,7 +102,7 @@ function countSurroundingMines (cell) {
   var surrounding = lib.getSurroundingCells(cell.row, cell.col);
   var count = 0;
   for (var x = 0; x < surrounding.length; x++) {
-    if (surrounding[x].isMine === "true") {
+    if (surrounding[x].isMine === true) {
       count++
     }
   }
